@@ -1,0 +1,52 @@
+---
+  - name: "Host file management"
+    hosts: localhost
+    connection: local 
+
+    vars:
+      p_action: ""
+      ip: ""
+      hostname: ""
+      host_file_path: "/etc/hosts"
+
+    tasks:
+    - name: "check file before"
+      shell: "more {{ host_file_path }}"
+      register: "output"
+    - debug: var=output.stdout_lines
+      
+    - name: "check if ip exists"
+      become: yes
+      become_user: root
+      ansible.builtin.lineinfile:
+        path: "{{ host_file_path }}"
+        state: absent
+        regexp: "^{{ ip | regex_escape() }}"
+      check_mode: true
+      changed_when: false
+      register: check
+
+    - name: "remove from /etc/hosts"
+      become: yes
+      become_user: root
+      ansible.builtin.lineinfile:
+        path: "{{ host_file_path }}"
+        state: absent
+        regexp: "^{{ ip | regex_escape() }}"
+        backup: yes
+      when: 
+        - p_action  == "delete"
+        - check.found == 1
+
+    - name: "add to /etc/hosts"
+      become: yes
+      become_user: root
+      ansible.builtin.lineinfile:
+        path: "{{ host_file_path }}"
+        state: present
+        regexp: "^{{ ip | regex_escape() }}"
+        line: "{{ ip }} {{ hostname }}"
+        backup: yes
+      when: 
+        - p_action  == "add"
+        - check.found == 0
