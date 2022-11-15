@@ -1,7 +1,7 @@
 ---
   - name: "Host file management"
-    hosts: localhost
-    connection: local 
+    hosts: web
+
 
     vars:
       p_action: ""
