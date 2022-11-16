@@ -1,6 +1,6 @@
 ---
   - name: "User and group management"
-    hosts: web
+    hosts: all
     vars:
       p_action: ""
       user_name: ""

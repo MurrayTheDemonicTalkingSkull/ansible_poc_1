@@ -1,7 +1,6 @@
 ---
   - name: "Host file management"
-    hosts: web
-
+    hosts: all
 
     vars:
       p_action: ""
