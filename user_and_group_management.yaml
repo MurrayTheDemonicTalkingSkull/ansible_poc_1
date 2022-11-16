@@ -1,0 +1,55 @@
+---
+  - name: "User and group management"
+    hosts: web
+    vars:
+      p_action: ""
+      user_name: ""
+      user_group: ""
+      group_create: ""
+
+    tasks:
+    - name: "check if user exists"
+      ansible.builtin.getent:
+        database: passwd
+        key: "{{ user_name }}"
+      register: user_check
+      ignore_errors: false
+    - ansible.builtin.debug:
+        var: user_check
+
+    - name: "check if group exists"
+      ansible.builtin.getent:
+        database: group
+        key: "{{ user_group }}"
+        split: ':'
+      ignore_errors: true
+      register: group_check
+      # when: user_check is succeeded
+    - ansible.builtin.debug:
+        var: group_check
+
+    - name: "create group if group does not exist and permition to create was given"
+      ansible.builtin.group:
+        name: "{{ user_group }}"
+        state: present
+      when: 
+        - group_check is failed
+        - group_create == "yes"
+
+    - name: "Add user to group"
+      ansible.builtin.user:
+        name: "{{ user_name }}"
+        comment: John Doe
+        groups: "{{ user_group }}"
+        append: yes
+      when: 
+        - p_action == "add"
+    
+    - name: "Remove user from group"
+      ansible.builtin.user:
+        name: "{{ user_name }}"
+        groups: "{{ user_group }}"
+        state: absent
+        remove: yes
+      when: 
+        - p_action == "remove"
