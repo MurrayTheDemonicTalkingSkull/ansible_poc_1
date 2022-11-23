@@ -1,0 +1,57 @@
+---
+  - name: "User and group management"
+    hosts: all
+    strategy: debug
+
+    gather_facts: no
+    become: yes
+    become_method: su
+    vars:
+      p_action: ""
+      user_name: ""
+      user_group: ""
+      group_create: ""
+    tasks:
+      - name: "check if user exists"
+        shell: "lsuser {{ user_name }} && echo true || echo false"
+        args:
+          warn: no
+        register: user_check
+      - ansible.builtin.debug:
+          var: user_check
+
+      - name: "check if group exists"
+        shell: "lsgroup {{ user_group }} && echo true || echo false"
+        args:
+          warn: no
+        register: group_check
+      - ansible.builtin.debug:
+          var: group_check
+
+      - name: "create group if group does not exist and permition to create was given"
+        ibm.power_aix.group:
+          name: "{{ user_group }}"
+          state: present
+        when:
+          - group_check.stdout is search("false")
+          - group_create == "yes"
+
+      - name: Add a member to a group
+        ibm.power_aix.group:
+          state: modify
+          name: "{{ user_group }}"
+          user_list_action: 'add'
+          user_list_type: 'members'
+          users_list: "{{ user_name }}"
+        when:
+          - p_action == "add"
+
+      - name: Remove a member of a group
+        ibm.power_aix.group:
+          state: modify
+          name: "{{ user_group }}"
+          user_list_action: 'remove'
+          user_list_type: 'members'
+          users_list: "{{ user_name }}"
+        when:
+          - p_action == "remove"

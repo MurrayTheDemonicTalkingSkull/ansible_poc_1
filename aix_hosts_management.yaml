@@ -1,9 +1,11 @@
 ---
-  - name: "Host file management"
+  - name: "AIX Host file management"
+    #hosts: aix
+    #user: ansadmin
     hosts: all
-    user: root
+    #user: root
     strategy: debug
-    #gather_facts: no
+    gather_facts: no
     become: yes
     become_method: su
 

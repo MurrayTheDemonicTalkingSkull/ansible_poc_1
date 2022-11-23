@@ -1,0 +1,11 @@
+---
+  - name: "Collect Facts"
+    hosts: all
+#    user: root
+    strategy: debug
+    gather_facts: yes
+#    become: yes
+    tasks:
+      - name: "Gather facts"
+        ansible.builtin.debug:
+            var: ansible_facts['distribution']

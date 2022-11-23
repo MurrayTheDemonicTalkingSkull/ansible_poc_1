@@ -1,0 +1,23 @@
+---
+#161.156.154.222
+# G*o53Cg#N8
+
+- name: "Bootstrap Yum on AIX"
+  hosts: aix
+  user: root
+  strategy: debug
+  #user: ansadmin
+  gather_facts: no
+  become: yes
+  become_method: su
+  vars:
+    log_file: "/tmp/ansible_lpar_debug.log"
+
+  tasks:
+    - name: Gather LPP Facts
+      shell: "oslevel -s"
+      register: output_oslevel
+
+    - name: Print the oslevel
+      debug:
+        msg: "has the AIX oslevel of {{ output_oslevel.stdout }}"

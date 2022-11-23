@@ -1,0 +1,18 @@
+---
+#161.156.154.222
+# G*o53Cg#N8
+
+- name: "Bootstrap Yum on AIX"
+  hosts: aix
+  user: root
+  gather_facts: no
+  vars:
+    log_file: "/tmp/ansible_lpar_debug.log"
+
+  tasks:
+  
+    # - name: "LPAR information"
+    #   ibm.power_aix.lpar_facts:
+    # - name: Print the LPAR related information
+    #   debug:
+    #     var: ansible_facts.lpar
