@@ -1,0 +1,18 @@
+---
+- name: "Test collections"
+  hosts: all
+  gather_facts: yes
+  collections:
+  - community.general
+  vars:
+    p_action: ""
+    user_name: "root"
+    user_group: "nagios"
+    group_create: ""
+
+  tasks:
+    - name: Create a logical volume with selected size
+      community.general.aix_lvol:
+        vg: "1"
+        lv: "1"
+        size: "1"
